@@ -11,7 +11,7 @@
 
   <!-- 90s marquee header -->
   <div class="marquee-bar">
-    <marquee scrollamount="4">&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;</marquee>
+    <marquee scrollamount="4">&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;</marquee>
   </div>
 
   <!-- Main scene -->
@@ -37,19 +37,23 @@
             <button id="play-btn" class="ctrl-btn" title="Play / Pause">&#9654;</button>
             <button id="next-btn" class="ctrl-btn skip-btn" title="Next track">&#8594;&#8594;</button>
           </div>
+          <div class="song-feels-heading">Song Feels</div>
+          <ul id="comments-list" class="comments-list"></ul>
+          <div class="comment-form">
+            <textarea id="comment-input" class="comment-input" maxlength="500" rows="2" placeholder="write sumthin duder"></textarea>
+            <button id="comment-submit" class="post-btn">post</button>
+          </div>
         </div>
       </div>
 
-      <!-- RIGHT PAGE overlays -->
+      <!-- RIGHT PAGE overlays — persistent guestbook -->
       <div class="right-page">
         <div class="guestbook-title">Guest Book</div>
-        <div class="guestbook-cursor-line">
-          <span id="comments-prompt" class="comments-prompt">Leave a note, comment on the song, sign it if you feel like it.</span>
-        </div>
-        <ul id="comments-list" class="comments-list"></ul>
+        <div class="guestbook-subtitle">Sign the guestbook! leave a comment for the crew</div>
+        <ul id="guestbook-list" class="comments-list guestbook-entries"></ul>
         <div class="comment-form">
-          <textarea id="comment-input" class="comment-input" maxlength="500" rows="2"></textarea>
-          <button id="comment-submit" class="post-btn">post</button>
+          <textarea id="guestbook-input" class="comment-input" maxlength="500" rows="2" placeholder="write sumthin duder"></textarea>
+          <button id="guestbook-submit" class="post-btn">sign it</button>
         </div>
       </div>
 
@@ -66,6 +70,41 @@
       <div id="share-toast" class="share-toast hidden">Link copied!</div>
     </div>
 
+    <!-- Mobile content (shown instead of overlays on small screens) -->
+    <div class="mobile-content">
+
+      <!-- Mobile player panel -->
+      <div class="mobile-panel" id="mobile-player-panel">
+        <div class="mobile-heading">Endless Jam</div>
+        <div id="m-loading" class="vt-text blink">loading...</div>
+        <div id="m-player" style="display:none">
+          <div id="m-date" class="mobile-sub"></div>
+          <div id="m-filename" class="mobile-sub" style="font-style:normal;font-size:0.75rem;color:#888;word-break:break-all;"></div>
+          <div id="m-track" style="font-family:'Caveat',cursive;font-size:1.3rem;color:#1a1a5e;margin:4px 0;"></div>
+          <audio id="audio-player-mobile" controls preload="auto" style="width:100%;accent-color:#7ab648;margin:6px 0;"></audio>
+          <div style="display:flex;gap:8px;">
+            <button id="m-next" class="post-btn" style="font-size:1rem;padding:4px 14px;">next track →</button>
+          </div>
+          <div style="margin-top:10px;">
+            <div style="font-family:'Caveat',cursive;font-size:1.1rem;color:#1a1a7e;font-style:italic;">Song Feels</div>
+            <ul id="m-comments-list" class="comments-list" style="max-height:120px;"></ul>
+            <textarea id="m-comment-input" class="comment-input" placeholder="write sumthin duder" maxlength="500" rows="2"></textarea>
+            <button id="m-comment-submit" class="post-btn">post</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile guestbook panel -->
+      <div class="mobile-panel">
+        <div class="mobile-heading">Guest Book</div>
+        <div class="mobile-sub">Sign the guestbook! leave a comment for the crew</div>
+        <ul id="m-guestbook-list" class="comments-list" style="max-height:150px;"></ul>
+        <textarea id="m-guestbook-input" class="comment-input" placeholder="write sumthin duder" maxlength="500" rows="2"></textarea>
+        <button id="m-guestbook-submit" class="post-btn">sign it</button>
+      </div>
+
+    </div>
+
     <!-- Error banner -->
     <div id="error-state" class="error-banner hidden">
       <span id="error-message">couldn't connect</span>&nbsp;&nbsp;
@@ -73,8 +112,9 @@
     </div>
   </main>
 
-  <!-- Guestbook toast -->
+  <!-- Toasts -->
   <div id="guestbook-toast" class="guestbook-toast hidden">&#9999;&#65039; Thanks for signing the guest book!</div>
+  <div id="songfeels-toast" class="guestbook-toast hidden">&#127925; Song feels posted!</div>
 
   <!-- Photo viewer -->
   <div id="photo-viewer" class="photo-viewer hidden">
@@ -83,6 +123,20 @@
       <button id="photo-prev" class="photo-btn">&#9668;</button>
       <button id="photo-pause" class="photo-btn">&#9646;&#9646;</button>
       <button id="photo-next" class="photo-btn">&#9658;</button>
+    </div>
+  </div>
+
+  <!-- Contact section -->
+  <div id="contact" class="contact-section">
+    <div class="contact-inner">
+      <h2 class="contact-heading">&#9993; Email Endless Jam</h2>
+      <p class="contact-sub">Got a song request, a story, a complaint? Holla.</p>
+      <form action="https://formspree.io/f/mjggkyry" method="POST" class="contact-form">
+        <input type="text" name="name" placeholder="your name (optional)" class="contact-field"/>
+        <input type="email" name="email" placeholder="your email (optional)" class="contact-field"/>
+        <textarea name="message" placeholder="what's on your mind..." class="contact-field contact-msg" rows="4" required></textarea>
+        <button type="submit" class="contact-submit">send it &#9733;</button>
+      </form>
     </div>
   </div>
 

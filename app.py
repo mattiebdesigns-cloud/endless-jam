@@ -248,6 +248,13 @@ def init_db():
                 created_at TEXT NOT NULL
             )
         ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS guestbook (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                text TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        ''')
         conn.commit()
 
 
@@ -374,6 +381,36 @@ def add_comment(file_id):
         conn.execute(
             'INSERT INTO comments (file_id, text, created_at) VALUES (?, ?, ?)',
             (file_id, text, datetime.utcnow().strftime('%Y-%m-%d %H:%M')),
+        )
+        conn.commit()
+    return jsonify({'ok': True}), 201
+
+
+# ---------------------------------------------------------------------------
+# Guestbook routes (site-wide, not track-specific)
+# ---------------------------------------------------------------------------
+@app.route('/api/guestbook', methods=['GET'])
+def get_guestbook():
+    with get_db() as conn:
+        rows = conn.execute(
+            'SELECT id, text, created_at FROM guestbook ORDER BY created_at DESC LIMIT 50',
+        ).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/guestbook', methods=['POST'])
+def add_guestbook():
+    data = request.get_json(silent=True) or {}
+    text = (data.get('text') or '').strip()
+    if not text:
+        return jsonify({'error': 'Message text is required'}), 400
+    if len(text) > 500:
+        return jsonify({'error': 'Message must be 500 characters or fewer'}), 400
+
+    with get_db() as conn:
+        conn.execute(
+            'INSERT INTO guestbook (text, created_at) VALUES (?, ?)',
+            (text, datetime.utcnow().strftime('%Y-%m-%d %H:%M')),
         )
         conn.commit()
     return jsonify({'ok': True}), 201
