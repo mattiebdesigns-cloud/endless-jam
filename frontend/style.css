@@ -64,7 +64,7 @@ body {
 /* left floor: 31.6%, 34.9% → anchor bottom there */
 .endless-jam-scrawl {
   position: absolute;
-  left: 31.6%; bottom: 65.1%;
+  left: 41.6%; bottom: 65.1%;
   font-family: 'Caveat Brush', cursive;
   font-size: clamp(1.6rem, 3.5vw, 2.6rem);
   color: #1a1a7e;
@@ -78,7 +78,7 @@ body {
 /* matches song title area: floor 41% */
 #loading-state {
   position: absolute;
-  left: 31.6%; bottom: 59%;
+  left: 41.6%; bottom: 59%;
   pointer-events: none;
 }
 
@@ -109,7 +109,7 @@ body {
 /* left floor: 31.6%, 41.0% → anchor bottom, width to 49.1% = 17.5% */
 .track-name-label {
   position: absolute;
-  left: 31.6%; bottom: 59%;
+  left: 41.6%; bottom: 59%;
   width: 17.5%;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.95rem, 2vw, 1.5rem);
@@ -123,7 +123,7 @@ body {
 /* left floor: 31.4%, 48.6% → anchor bottom */
 .date-hint {
   position: absolute;
-  left: 31.4%; bottom: 51.4%;
+  left: 41.4%; bottom: 51.4%;
   width: 17.7%;
   font-size: clamp(0.75rem, 1.5vw, 1rem);
   color: #3a3a8a;
@@ -134,7 +134,7 @@ body {
 /* ─── Tap hint ──────────────────────────────────────────── */
 .tap-hint {
   position: absolute;
-  left: 37.3%; bottom: 41%;
+  left: 47.3%; bottom: 41%;
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   color: #888;
   font-style: italic;
@@ -146,7 +146,7 @@ body {
 /* bottom-left: 37.3%, 60.8% → anchor bottom */
 .ipod-controls {
   position: absolute;
-  left: 37.3%; bottom: 39.2%;
+  left: 47.3%; bottom: 39.2%;
   display: flex;
   gap: 8px;
   pointer-events: all;
@@ -175,7 +175,7 @@ body {
 /* top: 33.8%,51.0% — bottom: 33.5%,57.0% → center 33.7%,54% — length 6% of height */
 .volume-slider {
   position: absolute;
-  left: 33.7%; top: 54%;
+  left: 43.7%; top: 54%;
   transform: translate(-50%, -50%) rotate(-90deg);
   width: 40px;
   height: 4px;
@@ -208,7 +208,7 @@ body {
 /* left floor: 31.2%, 64.7% → anchor bottom */
 .song-feels-heading {
   position: absolute;
-  left: 31.2%; bottom: 35.3%;
+  left: 41.2%; bottom: 35.3%;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.85rem, 1.8vw, 1.2rem);
   color: #1a1a7e;
@@ -231,7 +231,7 @@ body {
 /* Desktop: Song Feels list — 2.5% gap between heading floor (64.7%) and input top (67.2%) */
 #comments-list {
   position: absolute;
-  left: 31%; top: 65%;
+  left: 41%; top: 65%;
   width: 18.1%;
   max-height: 2%;
 }
@@ -295,7 +295,7 @@ body {
 /* upper-left: 31.0%,67.2% / lower-right: 49.1%,74.8% → width 18.1%, height 7.6% */
 #comment-input {
   position: absolute;
-  left: 31%; top: 67.2%;
+  left: 41%; top: 67.2%;
   width: 18.1%;
   pointer-events: all;
 }
@@ -304,7 +304,7 @@ body {
 /* top-left: 30.9%, 77.7% */
 #comment-submit {
   position: absolute;
-  left: 30.9%; top: 77.7%;
+  left: 40.9%; top: 77.7%;
   pointer-events: all;
 }
 
