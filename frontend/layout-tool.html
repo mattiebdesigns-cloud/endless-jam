@@ -2,186 +2,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Layout Tool — Click to get % positions</title>
+  <title>Layout Tool</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: monospace; background: #111; color: #eee; min-height: 100vh; padding: 16px; }
-    h1 { font-size: 1.1rem; margin-bottom: 8px; color: #0ff; }
-    p  { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; }
+    h1 { font-size: 1.1rem; color: #0ff; margin-bottom: 6px; }
 
     .drop-zone {
-      border: 2px dashed #555;
-      border-radius: 6px;
-      padding: 20px;
-      text-align: center;
-      color: #888;
-      cursor: pointer;
-      margin-bottom: 12px;
-      transition: border-color 0.2s;
+      border: 2px dashed #555; border-radius: 6px; padding: 20px;
+      text-align: center; color: #888; cursor: pointer; margin-bottom: 12px;
     }
     .drop-zone.drag-over { border-color: #0ff; color: #0ff; }
     .drop-zone input { display: none; }
 
-    .workspace {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
+    .workspace { display: flex; gap: 16px; align-items: flex-start; }
 
     .img-wrap {
-      position: relative;
-      flex-shrink: 0;
-      max-width: 70vw;
-      cursor: crosshair;
-      border: 1px solid #444;
+      position: relative; flex-shrink: 0; max-width: 70vw; cursor: crosshair;
     }
-    .img-wrap img {
-      display: block;
-      max-width: 100%;
-      user-select: none;
+    .img-wrap img { display: block; max-width: 100%; user-select: none; }
+
+    /* Calibration overlay box */
+    #cal-box {
+      position: absolute; border: 2px dashed #0ff;
+      pointer-events: none; display: none;
     }
 
     .pin {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #ff0;
-      border: 1.5px solid #000;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      position: absolute; width: 10px; height: 10px;
+      background: #ff0; border: 1.5px solid #000; border-radius: 50%;
+      transform: translate(-50%, -50%); pointer-events: none;
     }
     .pin-label {
-      position: absolute;
-      font-size: 10px;
-      background: rgba(0,0,0,0.75);
-      color: #ff0;
-      padding: 1px 4px;
-      border-radius: 3px;
-      white-space: nowrap;
-      pointer-events: none;
-      transform: translate(6px, -50%);
+      position: absolute; font-size: 10px;
+      background: rgba(0,0,0,0.75); color: #ff0;
+      padding: 1px 4px; border-radius: 3px; white-space: nowrap;
+      pointer-events: none; transform: translate(6px, -50%);
+    }
+    /* Calibration dots */
+    .cal-dot {
+      position: absolute; width: 10px; height: 10px;
+      background: #0ff; border: 1.5px solid #fff; border-radius: 50%;
+      transform: translate(-50%, -50%); pointer-events: none;
     }
 
-    .panel {
-      flex: 1;
-      min-width: 240px;
-    }
+    .panel { flex: 1; min-width: 240px; }
+    .panel h2 { font-size: 0.85rem; color: #0ff; margin-bottom: 8px; }
 
-    .panel h2 {
-      font-size: 0.85rem;
-      color: #0ff;
-      margin-bottom: 8px;
+    #status {
+      font-size: 0.8rem; padding: 8px 12px;
+      background: #1a1a1a; border: 1px solid #444; border-radius: 4px;
+      margin-bottom: 10px; line-height: 1.5;
     }
+    #status .step { color: #0ff; font-weight: bold; }
+    #status .dim  { color: #888; font-size: 0.75rem; }
 
-    #points-list {
-      list-style: none;
-      font-size: 0.8rem;
-      line-height: 2;
+    #reset-cal {
+      margin-bottom: 10px; background: #333; border: 1px solid #555;
+      color: #aaa; font-family: monospace; font-size: 0.75rem;
+      padding: 3px 10px; border-radius: 3px; cursor: pointer; display: none;
     }
-    #points-list li {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    #points-list .coords {
-      color: #ff0;
-      font-weight: bold;
-      min-width: 120px;
-    }
+    #reset-cal:hover { background: #444; }
+
+    #points-list { list-style: none; font-size: 0.8rem; line-height: 2; }
+    #points-list li { display: flex; align-items: center; gap: 6px; }
+    #points-list .coords { color: #ff0; font-weight: bold; min-width: 130px; }
     #points-list .label-input {
-      background: #222;
-      border: 1px solid #444;
-      color: #eee;
-      font-family: monospace;
-      font-size: 0.75rem;
-      padding: 1px 5px;
-      width: 140px;
+      background: #222; border: 1px solid #444; color: #eee;
+      font-family: monospace; font-size: 0.75rem; padding: 1px 5px; width: 140px;
     }
     #points-list .del-btn {
-      background: #500;
-      border: none;
-      color: #f88;
-      cursor: pointer;
-      font-size: 0.7rem;
-      padding: 1px 6px;
-      border-radius: 3px;
+      background: #500; border: none; color: #f88; cursor: pointer;
+      font-size: 0.7rem; padding: 1px 6px; border-radius: 3px;
     }
 
     #copy-btn {
-      margin-top: 12px;
-      background: #0ff;
-      color: #000;
-      border: none;
-      font-family: monospace;
-      font-size: 0.85rem;
-      padding: 6px 16px;
-      cursor: pointer;
-      border-radius: 4px;
+      margin-top: 12px; background: #0ff; color: #000; border: none;
+      font-family: monospace; font-size: 0.85rem; padding: 6px 16px;
+      cursor: pointer; border-radius: 4px;
     }
     #copy-btn:hover { background: #0dd; }
 
     #output {
-      margin-top: 10px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 4px;
-      padding: 10px;
-      font-size: 0.75rem;
-      white-space: pre;
-      color: #7fdb7f;
-      display: none;
+      margin-top: 10px; background: #1a1a1a; border: 1px solid #333;
+      border-radius: 4px; padding: 10px; font-size: 0.75rem;
+      white-space: pre; color: #7fdb7f; display: none;
     }
-
-    .hint { font-size: 0.75rem; color: #666; margin-top: 6px; }
   </style>
 </head>
 <body>
   <h1>Layout Tool</h1>
-  <p>Drop or load a screenshot, then click where you want things. Name each point. Copy the CSS % values when done.</p>
 
   <div class="drop-zone" id="drop-zone">
-    <span id="drop-label">Drop screenshot here, or click to browse</span>
+    <span>Drop your screenshot here, or click to browse</span>
     <input type="file" id="file-input" accept="image/*"/>
   </div>
 
   <div class="workspace" id="workspace" style="display:none">
     <div class="img-wrap" id="img-wrap">
       <img id="preview" src="" alt=""/>
+      <div id="cal-box"></div>
     </div>
+
     <div class="panel">
+      <div id="status">
+        <div class="step">Step 1 of 3</div>
+        Click the <strong>top-left corner</strong> of the notebook image
+        <div class="dim">(calibrates out browser chrome &amp; padding)</div>
+      </div>
+      <button id="reset-cal">↺ Reset calibration</button>
       <h2>Clicked Points</h2>
       <ul id="points-list"></ul>
-      <p class="hint">Click anywhere on the image to drop a pin.</p>
-      <button id="copy-btn">Copy as CSS comments</button>
+      <button id="copy-btn" style="display:none">Copy as CSS comments</button>
       <pre id="output"></pre>
     </div>
   </div>
 
   <script>
-    const dropZone  = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const workspace = document.getElementById('workspace');
-    const imgWrap   = document.getElementById('img-wrap');
-    const preview   = document.getElementById('preview');
-    const pointsList= document.getElementById('points-list');
-    const copyBtn   = document.getElementById('copy-btn');
-    const output    = document.getElementById('output');
+    const dropZone   = document.getElementById('drop-zone');
+    const fileInput  = document.getElementById('file-input');
+    const workspace  = document.getElementById('workspace');
+    const imgWrap    = document.getElementById('img-wrap');
+    const preview    = document.getElementById('preview');
+    const calBox     = document.getElementById('cal-box');
+    const status     = document.getElementById('status');
+    const resetBtn   = document.getElementById('reset-cal');
+    const pointsList = document.getElementById('points-list');
+    const copyBtn    = document.getElementById('copy-btn');
+    const output     = document.getElementById('output');
 
+    let calState = 0; // 0=need TL, 1=need BR, 2=calibrated
+    let cal = { x1:0, y1:0, x2:0, y2:0 }; // in pixels relative to image
     let points = [];
-    let nextId  = 1;
+    let nextId = 1;
 
     // ── Load image ──────────────────────────────────────────────
     dropZone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
-
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
     dropZone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) loadFile(file);
+      e.preventDefault(); dropZone.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) loadFile(f);
     });
 
     function loadFile(file) {
@@ -191,45 +154,131 @@
       preview.onload = () => {
         workspace.style.display = 'flex';
         dropZone.style.display = 'none';
+        resetCalibration();
       };
     }
 
-    // ── Click to pin ────────────────────────────────────────────
-    imgWrap.addEventListener('click', e => {
+    function resetCalibration() {
+      calState = 0;
+      cal = { x1:0, y1:0, x2:0, y2:0 };
+      calBox.style.display = 'none';
+      // Remove old cal dots
+      imgWrap.querySelectorAll('.cal-dot').forEach(d => d.remove());
+      points = [];
+      pointsList.innerHTML = '';
+      nextId = 1;
+      copyBtn.style.display = 'none';
+      output.style.display = 'none';
+      resetBtn.style.display = 'none';
+      setStatus(1, 'Click the <strong>top-left corner</strong> of the notebook image', 'calibrates out browser chrome &amp; padding');
+    }
+    resetBtn.addEventListener('click', resetCalibration);
+
+    function setStatus(step, msg, dim) {
+      status.innerHTML = `<div class="step">Step ${step} of 3</div>${msg}${dim ? `<div class="dim">${dim}</div>` : ''}`;
+    }
+
+    // ── Convert pixel offset in image → % relative to calibrated box ──
+    function toPercent(px, py) {
+      const w = cal.x2 - cal.x1;
+      const h = cal.y2 - cal.y1;
+      if (w <= 0 || h <= 0) return null;
+      return {
+        x: ((px - cal.x1) / w * 100).toFixed(1),
+        y: ((py - cal.y1) / h * 100).toFixed(1),
+      };
+    }
+
+    // ── Pixel offset of click relative to image element ────────────
+    function clickOffset(e) {
       const rect = preview.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
-      const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
-      addPoint(x, y);
+      return {
+        px: e.clientX - rect.left,
+        py: e.clientY - rect.top,
+      };
+    }
+
+    // ── Draw calibration box ────────────────────────────────────────
+    function drawCalBox() {
+      const iw = preview.getBoundingClientRect().width;
+      const ih = preview.getBoundingClientRect().height;
+      const x1pct = cal.x1 / iw * 100;
+      const y1pct = cal.y1 / ih * 100;
+      const x2pct = cal.x2 / iw * 100;
+      const y2pct = cal.y2 / ih * 100;
+      calBox.style.left   = x1pct + '%';
+      calBox.style.top    = y1pct + '%';
+      calBox.style.width  = (x2pct - x1pct) + '%';
+      calBox.style.height = (y2pct - y1pct) + '%';
+      calBox.style.display = 'block';
+    }
+
+    function placeDot(px, py, color) {
+      const rect = preview.getBoundingClientRect();
+      const dot = document.createElement('div');
+      dot.className = 'cal-dot';
+      dot.style.left = (px / rect.width * 100) + '%';
+      dot.style.top  = (py / rect.height * 100) + '%';
+      if (color) dot.style.background = color;
+      imgWrap.appendChild(dot);
+      return dot;
+    }
+
+    // ── Main click handler ──────────────────────────────────────────
+    imgWrap.addEventListener('click', e => {
+      const { px, py } = clickOffset(e);
+
+      if (calState === 0) {
+        cal.x1 = px; cal.y1 = py;
+        placeDot(px, py, '#0ff');
+        calState = 1;
+        resetBtn.style.display = 'inline-block';
+        setStatus(2, 'Now click the <strong>bottom-right corner</strong> of the notebook image', '');
+        return;
+      }
+
+      if (calState === 1) {
+        cal.x2 = px; cal.y2 = py;
+        placeDot(px, py, '#0ff');
+        calState = 2;
+        drawCalBox();
+        setStatus(3, 'Calibrated! Now <strong>click anywhere</strong> on the notebook to drop pins.', `Notebook box: ${(cal.x2-cal.x1).toFixed(0)}×${(cal.y2-cal.y1).toFixed(0)}px`);
+        copyBtn.style.display = 'inline-block';
+        return;
+      }
+
+      // Calibrated — add a point
+      const pct = toPercent(px, py);
+      if (!pct) return;
+      // Clamp to 0-100 with a warning for out-of-bounds
+      addPoint(parseFloat(pct.x), parseFloat(pct.y), px, py);
     });
 
-    function addPoint(x, y) {
+    function addPoint(x, y, px, py) {
       const id = nextId++;
       points.push({ id, x, y, label: '' });
 
       // Pin on image
+      const rect = preview.getBoundingClientRect();
       const pin = document.createElement('div');
-      pin.className = 'pin';
-      pin.id = `pin-${id}`;
-      pin.style.left = x + '%';
-      pin.style.top  = y + '%';
+      pin.className = 'pin'; pin.id = `pin-${id}`;
+      pin.style.left = (px / rect.width * 100) + '%';
+      pin.style.top  = (py / rect.height * 100) + '%';
       imgWrap.appendChild(pin);
 
       const lbl = document.createElement('div');
-      lbl.className = 'pin-label';
-      lbl.id = `pin-lbl-${id}`;
+      lbl.className = 'pin-label'; lbl.id = `pin-lbl-${id}`;
       lbl.textContent = `${id}`;
-      lbl.style.left = x + '%';
-      lbl.style.top  = y + '%';
+      lbl.style.left = (px / rect.width * 100) + '%';
+      lbl.style.top  = (py / rect.height * 100) + '%';
       imgWrap.appendChild(lbl);
 
-      // Row in list
       const li = document.createElement('li');
       li.id = `row-${id}`;
       li.innerHTML = `
         <span class="coords">#${id} left:${x}% top:${y}%</span>
-        <input class="label-input" type="text" placeholder="name this point" data-id="${id}"/>
-        <button class="del-btn" data-id="${id}">✕</button>
-      `;
+        <input class="label-input" type="text" placeholder="name" data-id="${id}"/>
+        <button class="del-btn" data-id="${id}">✕</button>`;
       pointsList.appendChild(li);
 
       li.querySelector('.label-input').addEventListener('input', e => {
