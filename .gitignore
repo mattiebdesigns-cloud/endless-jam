@@ -7,3 +7,8 @@ __pycache__/
 venv/
 *.json
 !.env.example
+.DS_Store
+*.jpg
+*.jpeg
+*.png
+*.gif
