@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Endless Jam</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Caveat+Brush&family=VT323&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- 90s marquee header -->
+  <div class="marquee-bar">
+    <marquee scrollamount="4">&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING&nbsp;&nbsp;&#9733;&nbsp;&nbsp;</marquee>
+  </div>
+
+  <!-- Main scene -->
+  <main class="scene">
+    <div class="notebook-wrapper">
+      <img class="notebook-bg" src="notebook-scene.jpg" alt="notebook on school desk"/>
+
+      <!-- LEFT PAGE overlays -->
+      <div class="left-page">
+        <div class="endless-jam-scrawl">Endless Jam</div>
+
+        <!-- Loading -->
+        <div id="loading-state" class="track-overlay">
+          <span class="vt-text blink">loading...</span>
+        </div>
+
+        <!-- Now playing -->
+        <div id="player-state" class="track-overlay hidden">
+          <div id="date-hint" class="date-hint"></div>
+          <div id="track-name" class="track-name-label"></div>
+          <div id="tap-hint" class="tap-hint hidden">tap ▶ to play</div>
+          <div class="ipod-controls">
+            <button id="play-btn" class="ctrl-btn" title="Play / Pause">&#9654;</button>
+            <button id="next-btn" class="ctrl-btn skip-btn" title="Next track">&#8594;&#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PAGE overlays -->
+      <div class="right-page">
+        <div class="guestbook-title">Guest Book</div>
+        <div class="guestbook-cursor-line">
+          <span id="comments-prompt" class="comments-prompt">Leave a note, comment on the song, sign it if you feel like it.</span>
+        </div>
+        <ul id="comments-list" class="comments-list"></ul>
+        <div class="comment-form">
+          <textarea id="comment-input" class="comment-input" maxlength="500" rows="2"></textarea>
+          <button id="comment-submit" class="post-btn">post</button>
+        </div>
+      </div>
+
+      <!-- Ninja star share button — on the desk surface -->
+      <button id="share-btn" class="ninja-star" title="Share this song">
+        <div class="star-h"></div>
+        <div class="star-v"></div>
+        <div class="star-d1"></div>
+        <div class="star-d2"></div>
+        <div class="star-center"></div>
+      </button>
+
+      <!-- Share tooltip -->
+      <div id="share-toast" class="share-toast hidden">Link copied!</div>
+    </div>
+
+    <!-- Error banner -->
+    <div id="error-state" class="error-banner hidden">
+      <span id="error-message">couldn't connect</span>&nbsp;&nbsp;
+      <button id="retry-btn" class="post-btn">try again</button>
+    </div>
+  </main>
+
+  <!-- Photo viewer -->
+  <div id="photo-viewer" class="photo-viewer hidden">
+    <img id="photo-img" src="" alt=""/>
+    <div class="photo-controls">
+      <button id="photo-prev" class="photo-btn">&#9668;</button>
+      <button id="photo-pause" class="photo-btn">&#9646;&#9646;</button>
+      <button id="photo-next" class="photo-btn">&#9658;</button>
+    </div>
+  </div>
+
+  <!-- Hidden audio -->
+  <audio id="audio-player" preload="auto"></audio>
+
+  <script src="radio.js"></script>
+</body>
+</html>

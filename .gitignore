@@ -12,3 +12,4 @@ venv/
 *.jpeg
 *.png
 *.gif
+frontend/notebook-scene.*

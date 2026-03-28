@@ -1,0 +1,388 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Space / starfield background ──────────────────────── */
+body {
+  background-color: #00003a;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 60%, #fff 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 30%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 80%, #ffe 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 10%, #fff 0%, transparent 100%),
+    radial-gradient(2px 2px at 80% 50%, #ffe 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 75%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 90%, #fff 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 45%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 5%, #ffe 0%, transparent 100%);
+  cursor: none;
+  font-family: 'Caveat', cursive;
+  min-height: 100vh;
+}
+
+/* ─── Marquee header ────────────────────────────────────── */
+.marquee-bar {
+  background: #ff00ff;
+  color: #ffff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  padding: 4px 0;
+  border-bottom: 3px solid #00ffff;
+  border-top: 3px solid #00ffff;
+}
+
+/* ─── Main scene ────────────────────────────────────────── */
+.scene {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 12px;
+}
+
+/* ─── Notebook wrapper ──────────────────────────────────── */
+.notebook-wrapper {
+  position: relative;
+}
+
+.notebook-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 4px solid #00ffff;
+  box-shadow: 0 0 24px #ff00ff, 0 0 60px rgba(0,255,255,0.3);
+}
+
+/* ─── Left page overlays ────────────────────────────────── */
+/* Tune these % values if your image differs */
+.left-page {
+  position: absolute;
+  top: 8%;
+  left: 6%;
+  width: 40%;
+  height: 85%;
+  pointer-events: none;
+}
+
+.endless-jam-scrawl {
+  font-family: 'Caveat Brush', cursive;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  color: #1a1a7e;
+  transform: rotate(-1.5deg);
+  line-height: 1;
+  pointer-events: none;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+}
+
+.track-overlay {
+  position: absolute;
+  bottom: 10%;
+  left: 0;
+  width: 100%;
+  pointer-events: all;
+}
+
+.track-overlay.hidden { display: none; }
+
+.vt-text {
+  font-family: 'VT323', monospace;
+  color: #00ffcc;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  text-shadow: 0 0 8px #00ffcc;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+.blink { animation: blink 1.2s ease-in-out infinite; }
+
+.date-hint {
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  color: #3a3a8a;
+  font-style: italic;
+  min-height: 1em;
+}
+
+.track-name-label {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.95rem, 2vw, 1.5rem);
+  color: #1a1a5e;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.tap-hint {
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  color: #888;
+  font-style: italic;
+}
+.tap-hint.hidden { display: none; }
+
+/* ─── iPod-style controls ───────────────────────────────── */
+.ipod-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ctrl-btn {
+  background: rgba(255,255,255,0.15);
+  border: 2px solid #1a1a5e;
+  border-radius: 50%;
+  width: clamp(28px, 5vw, 38px);
+  height: clamp(28px, 5vw, 38px);
+  font-size: clamp(0.75rem, 1.6vw, 1rem);
+  color: #1a1a5e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.ctrl-btn:hover {
+  background: rgba(26, 26, 94, 0.15);
+}
+
+.skip-btn { border-radius: 6px; }
+
+/* ─── Right page overlays ───────────────────────────────── */
+.right-page {
+  position: absolute;
+  top: 8%;
+  left: 55%;
+  width: 39%;
+  height: 86%;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guestbook-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+  color: #1a1a7e;
+  font-weight: 400;
+  transform: rotate(0.5deg);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.guestbook-cursor-line {
+  min-height: 1.4em;
+  pointer-events: none;
+}
+
+.comments-prompt {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+  color: #555599;
+  font-style: italic;
+}
+
+/* ─── Comments ──────────────────────────────────────────── */
+.comments-list {
+  list-style: none;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: all;
+  max-height: 38%;
+  scrollbar-width: none;
+}
+.comments-list::-webkit-scrollbar { display: none; }
+
+.comment-item {
+  pointer-events: none;
+}
+
+.comment-text {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  color: #1a1a5e;
+  line-height: 1.35;
+}
+
+.comment-time {
+  font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+  color: #888;
+  font-style: italic;
+}
+
+.comment-empty {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  color: #aaa;
+  font-style: italic;
+}
+
+.comment-form {
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.comment-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(26,26,94,0.3);
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  color: #1a1a5e;
+  resize: none;
+  outline: none;
+  padding: 2px 0;
+  line-height: 1.4;
+}
+
+.comment-input::placeholder {
+  color: transparent; /* hidden once comments-prompt shows */
+}
+
+.post-btn {
+  align-self: flex-start;
+  background: none;
+  border: 1px solid #1a1a5e;
+  border-radius: 3px;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  color: #1a1a5e;
+  padding: 1px 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.post-btn:hover { background: rgba(26,26,94,0.1); }
+
+/* ─── Ninja star share button ───────────────────────────── */
+.ninja-star {
+  position: absolute;
+  bottom: 4%;
+  right: 3%;
+  width: clamp(36px, 5vw, 52px);
+  height: clamp(36px, 5vw, 52px);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s;
+}
+
+.ninja-star:hover { transform: rotate(45deg) scale(1.1); }
+.ninja-star:active { transform: rotate(90deg) scale(0.95); }
+
+/* The star is made of 4 overlapping rectangles rotated */
+.star-h, .star-v, .star-d1, .star-d2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 55%;
+  height: 28%;
+  background: #ff4500;
+  border: 1.5px solid #cc3300;
+  transform-origin: center;
+  border-radius: 3px;
+}
+
+.star-h  { transform: translate(-50%, -50%) rotate(0deg); }
+.star-v  { transform: translate(-50%, -50%) rotate(90deg); }
+.star-d1 { transform: translate(-50%, -50%) rotate(45deg); }
+.star-d2 { transform: translate(-50%, -50%) rotate(135deg); }
+
+.star-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+  background: #ff6600;
+  border: 1.5px solid #cc3300;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.share-toast {
+  position: absolute;
+  bottom: 12%;
+  right: 2%;
+  background: #ffff00;
+  color: #000;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  padding: 3px 10px;
+  border: 2px solid #ff00ff;
+  pointer-events: none;
+}
+.share-toast.hidden { display: none; }
+
+/* ─── Error banner ──────────────────────────────────────── */
+.error-banner {
+  background: #ff0066;
+  color: #ffff00;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 8px;
+  margin-top: 8px;
+  border: 2px solid #ffff00;
+}
+.error-banner.hidden { display: none; }
+
+/* ─── Photo viewer ──────────────────────────────────────── */
+.photo-viewer {
+  max-width: 1000px;
+  margin: 16px auto 0;
+  background: #000;
+  border: 4px solid #ff00ff;
+  box-shadow: 0 0 20px #ff00ff;
+  position: relative;
+  aspect-ratio: 4/3;
+}
+.photo-viewer.hidden { display: none; }
+
+#photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.photo-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.photo-btn {
+  background: rgba(0,0,0,0.7);
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  padding: 5px 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.photo-btn:hover { background: rgba(0,255,255,0.2); }
+
+/* ─── Cursor canvas (injected by JS) ────────────────────── */
+#cursor-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── Mobile ────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .scene { margin: 8px auto; padding: 0 6px; }
+  .ipod-controls { gap: 5px; }
+  .right-page { left: 54%; width: 40%; }
+}
