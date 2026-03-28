@@ -51,21 +51,19 @@ body {
   box-shadow: 0 0 24px #ff00ff, 0 0 60px rgba(0,255,255,0.3);
 }
 
-/* ─── Left page overlays ────────────────────────────────── */
-/* Tune these % values if your image differs */
-.left-page {
+/* ─── Page overlays — full-size transparent containers ──── */
+.left-page,
+.right-page {
   position: absolute;
-  top: 8%;
-  left: 6%;
-  width: 40%;
-  height: 85%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
 }
 
+/* ─── "Endless Jam" scrawl ──────────────────────────────── */
 .endless-jam-scrawl {
   position: absolute;
-  top: 0;
-  left: 0;
+  left: 31.4%; top: 31.6%;
   font-family: 'Caveat Brush', cursive;
   font-size: clamp(1.6rem, 3.5vw, 2.6rem);
   color: #1a1a7e;
@@ -75,16 +73,23 @@ body {
   text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
 }
 
-.track-overlay {
+/* ─── Loading indicator ─────────────────────────────────── */
+#loading-state {
   position: absolute;
-  top: 60%;
-  left: 0;
-  width: 100%;
-  pointer-events: all;
+  left: 31.7%; top: 40.6%;
+  pointer-events: none;
 }
 
+/* ─── Track overlay (full-size transparent container) ───── */
+.track-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
 .track-overlay.hidden { display: none; }
 
+/* ─── VT text / blink ───────────────────────────────────── */
 .vt-text {
   font-family: 'VT323', monospace;
   color: #00ffcc;
@@ -98,34 +103,48 @@ body {
 }
 .blink { animation: blink 1.2s ease-in-out infinite; }
 
-.date-hint {
-  font-size: clamp(0.75rem, 1.5vw, 1rem);
-  color: #3a3a8a;
-  font-style: italic;
-  min-height: 1em;
-}
-
+/* ─── Track name ────────────────────────────────────────── */
 .track-name-label {
+  position: absolute;
+  left: 31.7%; top: 40.6%;
+  width: 17.5%;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.95rem, 2vw, 1.5rem);
   color: #1a1a5e;
   line-height: 1.3;
-  margin-bottom: 6px;
   word-break: break-word;
+  pointer-events: none;
 }
 
+/* ─── Date hint ─────────────────────────────────────────── */
+.date-hint {
+  position: absolute;
+  left: 31.6%; top: 44.3%;
+  width: 17.6%;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  color: #3a3a8a;
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* ─── Tap hint ──────────────────────────────────────────── */
 .tap-hint {
+  position: absolute;
+  left: 34.9%; top: 58%;
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   color: #888;
   font-style: italic;
+  pointer-events: none;
 }
 .tap-hint.hidden { display: none; }
 
 /* ─── iPod-style controls ───────────────────────────────── */
 .ipod-controls {
+  position: absolute;
+  left: 34.9%; top: 61%;
   display: flex;
   gap: 8px;
-  margin-top: 4px;
+  pointer-events: all;
 }
 
 .ctrl-btn {
@@ -142,24 +161,25 @@ body {
   justify-content: center;
   transition: background 0.15s;
   font-family: inherit;
+  pointer-events: all;
 }
-
-.ctrl-btn:hover {
-  background: rgba(26, 26, 94, 0.15);
-}
-
+.ctrl-btn:hover { background: rgba(26, 26, 94, 0.15); }
 .skip-btn { border-radius: 6px; }
 
+/* ─── Vertical volume slider ────────────────────────────── */
 .volume-slider {
-  -webkit-appearance: none;
-  appearance: none;
+  position: absolute;
+  left: 30%; top: 60.7%;
+  transform: translate(-50%, -50%) rotate(-90deg);
   width: clamp(40px, 7vw, 70px);
   height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
   background: rgba(26,26,94,0.3);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
-  align-self: center;
+  pointer-events: all;
 }
 .volume-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -178,58 +198,51 @@ body {
   cursor: pointer;
 }
 
-/* ─── Right page overlays ───────────────────────────────── */
-.right-page {
+/* ─── Song Feels heading ────────────────────────────────── */
+.song-feels-heading {
   position: absolute;
-  top: 8%;
-  left: 55%;
-  width: 39%;
-  height: 86%;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.guestbook-title {
+  left: 31.4%; top: 64.8%;
   font-family: 'Caveat', cursive;
-  font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+  font-size: clamp(0.85rem, 1.8vw, 1.2rem);
   color: #1a1a7e;
-  font-weight: 400;
-  transform: rotate(0.5deg);
-  line-height: 1;
-  pointer-events: none;
-}
-
-.guestbook-cursor-line {
-  min-height: 1.4em;
-  pointer-events: none;
-}
-
-.comments-prompt {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
-  color: #555599;
   font-style: italic;
+  pointer-events: none;
 }
 
-/* ─── Comments ──────────────────────────────────────────── */
+/* ─── Comments list (shared base) ──────────────────────── */
 .comments-list {
   list-style: none;
-  flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 2px;
   pointer-events: all;
-  max-height: 38%;
   scrollbar-width: none;
 }
 .comments-list::-webkit-scrollbar { display: none; }
 
-.comment-item {
-  pointer-events: none;
+/* Desktop: Song Feels list — compact strip between heading and textarea */
+#comments-list {
+  position: absolute;
+  left: 31.4%; top: 65.8%;
+  width: 17.7%;
+  max-height: 2.5%;
 }
+
+/* Desktop: Guestbook list — full defined area */
+#guestbook-list {
+  position: absolute;
+  left: 53.7%; top: 38.1%;
+  width: 19.4%;
+  height: 25.3%;
+  max-height: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26,26,94,0.3) transparent;
+}
+#guestbook-list::-webkit-scrollbar { display: block; width: 4px; }
+#guestbook-list::-webkit-scrollbar-thumb { background: rgba(26,26,94,0.3); border-radius: 2px; }
+
+.comment-item { pointer-events: none; }
 
 .comment-text {
   font-family: 'Caveat', cursive;
@@ -251,16 +264,8 @@ body {
   font-style: italic;
 }
 
-.comment-form {
-  pointer-events: all;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-}
-
+/* ─── Comment inputs ────────────────────────────────────── */
 .comment-input {
-  width: 100%;
   background: rgba(255,255,255,0.15);
   border: 2px dashed rgba(26,26,94,0.4);
   border-radius: 4px;
@@ -271,17 +276,45 @@ body {
   outline: none;
   padding: 4px 6px;
   line-height: 1.85;
+  width: 100%;
 }
-
 .comment-input:focus {
   border-color: rgba(26,26,94,0.7);
   background: rgba(255,255,255,0.25);
 }
+.comment-input::placeholder { color: rgba(26, 26, 94, 0.45); }
 
-.comment-input::placeholder {
-  color: rgba(26, 26, 94, 0.45);
+/* Desktop — Song Feels textarea */
+#comment-input {
+  position: absolute;
+  left: 31.4%; top: 68.6%;
+  width: 17.7%;
+  pointer-events: all;
 }
 
+/* Desktop — Song Feels post button */
+#comment-submit {
+  position: absolute;
+  left: 31.2%; top: 76.1%;
+  pointer-events: all;
+}
+
+/* Desktop — Guestbook textarea */
+#guestbook-input {
+  position: absolute;
+  left: 53.7%; top: 70.7%;
+  width: 19%;
+  pointer-events: all;
+}
+
+/* Desktop — Guestbook submit button */
+#guestbook-submit {
+  position: absolute;
+  left: 53.8%; top: 76.1%;
+  pointer-events: all;
+}
+
+/* ─── Post button ────────────────────────────────────────── */
 .post-btn {
   align-self: flex-start;
   background: none;
@@ -293,8 +326,48 @@ body {
   padding: 1px 8px;
   cursor: pointer;
   transition: background 0.15s;
+  pointer-events: all;
 }
 .post-btn:hover { background: rgba(26,26,94,0.1); }
+
+/* ─── Right page — Guest Book ────────────────────────────── */
+.guestbook-title {
+  position: absolute;
+  left: 53.5%; top: 31.7%;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+  color: #1a1a7e;
+  font-weight: 400;
+  transform: rotate(0.5deg);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.guestbook-subtitle {
+  position: absolute;
+  left: 53.6%; top: 67.2%;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+  color: #555599;
+  font-style: italic;
+  line-height: 1.3;
+  pointer-events: none;
+}
+
+/* ─── Send a Note link ───────────────────────────────────── */
+.send-note-link {
+  position: absolute;
+  left: 75%; top: 27%;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  color: #1a1a5e;
+  text-decoration: none;
+  pointer-events: all;
+  white-space: nowrap;
+  font-style: italic;
+  transform: rotate(1deg);
+}
+.send-note-link:hover { text-decoration: underline; }
 
 /* ─── Ninja star share button ───────────────────────────── */
 .ninja-star {
@@ -309,11 +382,9 @@ body {
   padding: 0;
   transition: transform 0.3s;
 }
-
 .ninja-star:hover { transform: rotate(45deg) scale(1.1); }
 .ninja-star:active { transform: rotate(90deg) scale(0.95); }
 
-/* The star is made of 4 overlapping rectangles rotated */
 .star-h, .star-v, .star-d1, .star-d2 {
   position: absolute;
   top: 50%;
@@ -325,7 +396,6 @@ body {
   transform-origin: center;
   border-radius: 3px;
 }
-
 .star-h  { transform: translate(-50%, -50%) rotate(0deg); }
 .star-v  { transform: translate(-50%, -50%) rotate(90deg); }
 .star-d1 { transform: translate(-50%, -50%) rotate(45deg); }
@@ -370,44 +440,6 @@ body {
 }
 .error-banner.hidden { display: none; }
 
-/* ─── Photo viewer ──────────────────────────────────────── */
-.photo-viewer {
-  max-width: 1000px;
-  margin: 16px auto 0;
-  background: #000;
-  border: 4px solid #ff00ff;
-  box-shadow: 0 0 20px #ff00ff;
-  position: relative;
-  aspect-ratio: 4/3;
-}
-.photo-viewer.hidden { display: none; }
-
-#photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.photo-controls {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-}
-
-.photo-btn {
-  background: rgba(0,0,0,0.7);
-  color: #00ffff;
-  border: 1px solid #00ffff;
-  padding: 5px 14px;
-  font-family: inherit;
-  cursor: pointer;
-}
-.photo-btn:hover { background: rgba(0,255,255,0.2); }
-
 /* ─── Marquee link ──────────────────────────────────────── */
 .marquee-link {
   color: #00ffff;
@@ -415,26 +447,6 @@ body {
   font-weight: bold;
 }
 .marquee-link:hover { text-decoration: underline; }
-
-/* ─── Song Feels heading ────────────────────────────────── */
-.song-feels-heading {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(0.85rem, 1.8vw, 1.2rem);
-  color: #1a1a7e;
-  font-style: italic;
-  margin-top: 6px;
-  margin-bottom: 2px;
-}
-
-/* ─── Guestbook subtitle ────────────────────────────────── */
-.guestbook-subtitle {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
-  color: #555599;
-  font-style: italic;
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
 
 /* ─── Toasts ────────────────────────────────────────────── */
 .guestbook-toast {
@@ -535,12 +547,10 @@ body {
 
 /* ─── Mobile — stack content below image ───────────────── */
 @media (max-width: 700px) {
-  body { cursor: auto; } /* restore cursor on touch */
+  body { cursor: auto; }
 
-  /* Notebook image is decorative only on mobile */
   .left-page, .right-page, .ninja-star, .share-toast { display: none; }
 
-  /* Mobile content panel below the image */
   .mobile-content {
     display: flex;
     flex-direction: column;
@@ -556,9 +566,7 @@ body {
     gap: 8px;
   }
 
-  .mobile-panel + .mobile-panel {
-    border-top: none;
-  }
+  .mobile-panel + .mobile-panel { border-top: none; }
 
   .mobile-heading {
     font-family: 'Caveat Brush', cursive;

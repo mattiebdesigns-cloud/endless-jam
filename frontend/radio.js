@@ -69,10 +69,6 @@ let isPlaying = false;
 // Single audio element — shown on mobile via CSS, controlled via JS on desktop
 const audioPlayer = qs('audio-player');
 
-// Photos
-let photos = [], photoIndex = 0, photoPaused = false, photoTimer = null;
-const PHOTO_INTERVAL = 6000;
-
 // ─── Desktop UI refs ──────────────────────────────────────────────────────────
 const loadingState = qs('loading-state');
 const playerState  = qs('player-state');
@@ -212,36 +208,6 @@ async function submitGuestbook(inputEl, listEl) {
   } catch { } finally { inputEl.disabled = false; }
 }
 
-// ─── Photos ───────────────────────────────────────────────────────────────────
-async function initPhotos() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/photos`);
-    photos = await res.json();
-    if (!photos.length) return;
-    photoIndex = Math.floor(Math.random() * photos.length);
-    qs('photo-viewer').classList.remove('hidden');
-    showPhoto(photoIndex); scheduleNextPhoto();
-  } catch { }
-}
-
-function showPhoto(i) {
-  const p = photos[i]; if (p) qs('photo-img').src = `${BACKEND_URL}/api/photo/${p.id}`;
-}
-function scheduleNextPhoto() {
-  clearTimeout(photoTimer);
-  if (!photoPaused && photos.length > 0) {
-    photoTimer = setTimeout(() => { photoIndex = (photoIndex+1)%photos.length; showPhoto(photoIndex); scheduleNextPhoto(); }, PHOTO_INTERVAL);
-  }
-}
-
-qs('photo-prev').addEventListener('click', () => { photoIndex=(photoIndex-1+photos.length)%photos.length; showPhoto(photoIndex); scheduleNextPhoto(); });
-qs('photo-next').addEventListener('click', () => { photoIndex=(photoIndex+1)%photos.length; showPhoto(photoIndex); scheduleNextPhoto(); });
-qs('photo-pause').addEventListener('click', () => {
-  photoPaused = !photoPaused;
-  qs('photo-pause').innerHTML = photoPaused ? '&#9658;' : '&#9646;&#9646;';
-  photoPaused ? clearTimeout(photoTimer) : scheduleNextPhoto();
-});
-
 // ─── Audio events ─────────────────────────────────────────────────────────────
 if (playBtn) {
   playBtn.addEventListener('click', () => { isPlaying ? audioPlayer.pause() : audioPlayer.play().catch(()=>{}); });
@@ -372,5 +338,4 @@ document.addEventListener('keydown', unlockAutoplay, { once: true });
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 loadGuestbook();
-initPhotos();
 loadNextTrack();
