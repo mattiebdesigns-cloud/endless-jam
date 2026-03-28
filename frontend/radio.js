@@ -353,6 +353,23 @@ if (mGbInput)  mGbInput.addEventListener('keydown', e => { if (e.key==='Enter'&&
 // Mobile — Next
 if (mNextBtn) mNextBtn.addEventListener('click', () => { retryCount = 0; loadNextTrack(); });
 
+// ─── Volume slider ────────────────────────────────────────────────────────────
+const volSlider = qs('volume-slider');
+if (volSlider) {
+  volSlider.addEventListener('input', () => { audioPlayer.volume = parseFloat(volSlider.value); });
+}
+
+// ─── Autoplay unlock — first user interaction starts audio if blocked ─────────
+let autoplayUnlocked = false;
+function unlockAutoplay() {
+  if (autoplayUnlocked || isPlaying) return;
+  autoplayUnlocked = true;
+  audioPlayer.play().catch(() => {});
+  if (tapHint) tapHint.classList.add('hidden');
+}
+document.addEventListener('click', unlockAutoplay, { once: true });
+document.addEventListener('keydown', unlockAutoplay, { once: true });
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 loadGuestbook();
 initPhotos();

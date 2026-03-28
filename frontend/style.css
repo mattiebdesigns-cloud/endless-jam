@@ -150,6 +150,34 @@ body {
 
 .skip-btn { border-radius: 6px; }
 
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: clamp(40px, 7vw, 70px);
+  height: 4px;
+  background: rgba(26,26,94,0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  align-self: center;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1a1a5e;
+  cursor: pointer;
+}
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1a1a5e;
+  border: none;
+  cursor: pointer;
+}
+
 /* ─── Right page overlays ───────────────────────────────── */
 .right-page {
   position: absolute;

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Layout Tool — Click to get % positions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: monospace; background: #111; color: #eee; min-height: 100vh; padding: 16px; }
+    h1 { font-size: 1.1rem; margin-bottom: 8px; color: #0ff; }
+    p  { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; }
+
+    .drop-zone {
+      border: 2px dashed #555;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      color: #888;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .drop-zone.drag-over { border-color: #0ff; color: #0ff; }
+    .drop-zone input { display: none; }
+
+    .workspace {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .img-wrap {
+      position: relative;
+      flex-shrink: 0;
+      max-width: 70vw;
+      cursor: crosshair;
+      border: 1px solid #444;
+    }
+    .img-wrap img {
+      display: block;
+      max-width: 100%;
+      user-select: none;
+    }
+
+    .pin {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ff0;
+      border: 1.5px solid #000;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .pin-label {
+      position: absolute;
+      font-size: 10px;
+      background: rgba(0,0,0,0.75);
+      color: #ff0;
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: translate(6px, -50%);
+    }
+
+    .panel {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .panel h2 {
+      font-size: 0.85rem;
+      color: #0ff;
+      margin-bottom: 8px;
+    }
+
+    #points-list {
+      list-style: none;
+      font-size: 0.8rem;
+      line-height: 2;
+    }
+    #points-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #points-list .coords {
+      color: #ff0;
+      font-weight: bold;
+      min-width: 120px;
+    }
+    #points-list .label-input {
+      background: #222;
+      border: 1px solid #444;
+      color: #eee;
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 1px 5px;
+      width: 140px;
+    }
+    #points-list .del-btn {
+      background: #500;
+      border: none;
+      color: #f88;
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    #copy-btn {
+      margin-top: 12px;
+      background: #0ff;
+      color: #000;
+      border: none;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 6px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #copy-btn:hover { background: #0dd; }
+
+    #output {
+      margin-top: 10px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 0.75rem;
+      white-space: pre;
+      color: #7fdb7f;
+      display: none;
+    }
+
+    .hint { font-size: 0.75rem; color: #666; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Layout Tool</h1>
+  <p>Drop or load a screenshot, then click where you want things. Name each point. Copy the CSS % values when done.</p>
+
+  <div class="drop-zone" id="drop-zone">
+    <span id="drop-label">Drop screenshot here, or click to browse</span>
+    <input type="file" id="file-input" accept="image/*"/>
+  </div>
+
+  <div class="workspace" id="workspace" style="display:none">
+    <div class="img-wrap" id="img-wrap">
+      <img id="preview" src="" alt=""/>
+    </div>
+    <div class="panel">
+      <h2>Clicked Points</h2>
+      <ul id="points-list"></ul>
+      <p class="hint">Click anywhere on the image to drop a pin.</p>
+      <button id="copy-btn">Copy as CSS comments</button>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+  <script>
+    const dropZone  = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const workspace = document.getElementById('workspace');
+    const imgWrap   = document.getElementById('img-wrap');
+    const preview   = document.getElementById('preview');
+    const pointsList= document.getElementById('points-list');
+    const copyBtn   = document.getElementById('copy-btn');
+    const output    = document.getElementById('output');
+
+    let points = [];
+    let nextId  = 1;
+
+    // ── Load image ──────────────────────────────────────────────
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) loadFile(file);
+    });
+
+    function loadFile(file) {
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.onload = () => {
+        workspace.style.display = 'flex';
+        dropZone.style.display = 'none';
+      };
+    }
+
+    // ── Click to pin ────────────────────────────────────────────
+    imgWrap.addEventListener('click', e => {
+      const rect = preview.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
+      const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
+      addPoint(x, y);
+    });
+
+    function addPoint(x, y) {
+      const id = nextId++;
+      points.push({ id, x, y, label: '' });
+
+      // Pin on image
+      const pin = document.createElement('div');
+      pin.className = 'pin';
+      pin.id = `pin-${id}`;
+      pin.style.left = x + '%';
+      pin.style.top  = y + '%';
+      imgWrap.appendChild(pin);
+
+      const lbl = document.createElement('div');
+      lbl.className = 'pin-label';
+      lbl.id = `pin-lbl-${id}`;
+      lbl.textContent = `${id}`;
+      lbl.style.left = x + '%';
+      lbl.style.top  = y + '%';
+      imgWrap.appendChild(lbl);
+
+      // Row in list
+      const li = document.createElement('li');
+      li.id = `row-${id}`;
+      li.innerHTML = `
+        <span class="coords">#${id} left:${x}% top:${y}%</span>
+        <input class="label-input" type="text" placeholder="name this point" data-id="${id}"/>
+        <button class="del-btn" data-id="${id}">✕</button>
+      `;
+      pointsList.appendChild(li);
+
+      li.querySelector('.label-input').addEventListener('input', e => {
+        const pt = points.find(p => p.id == e.target.dataset.id);
+        if (pt) {
+          pt.label = e.target.value;
+          const pl = document.getElementById(`pin-lbl-${pt.id}`);
+          if (pl) pl.textContent = pt.label || `${pt.id}`;
+        }
+      });
+
+      li.querySelector('.del-btn').addEventListener('click', e => {
+        const did = parseInt(e.target.dataset.id);
+        points = points.filter(p => p.id !== did);
+        document.getElementById(`pin-${did}`)?.remove();
+        document.getElementById(`pin-lbl-${did}`)?.remove();
+        document.getElementById(`row-${did}`)?.remove();
+      });
+    }
+
+    // ── Copy output ─────────────────────────────────────────────
+    copyBtn.addEventListener('click', () => {
+      if (!points.length) { output.textContent = '(no points yet)'; output.style.display='block'; return; }
+      const lines = points.map(p =>
+        `/* ${p.label || `point ${p.id}`}: left: ${p.x}%; top: ${p.y}%; */`
+      ).join('\n');
+      output.textContent = lines;
+      output.style.display = 'block';
+      navigator.clipboard.writeText(lines).catch(() => {});
+    });
+  </script>
+</body>
+</html>
