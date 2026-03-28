@@ -74,7 +74,7 @@ body {
 
 .track-overlay {
   position: absolute;
-  bottom: 10%;
+  top: 60%;
   left: 0;
   width: 100%;
   pointer-events: all;
@@ -204,7 +204,7 @@ body {
   font-family: 'Caveat', cursive;
   font-size: clamp(0.75rem, 1.5vw, 1rem);
   color: #1a1a5e;
-  line-height: 1.35;
+  line-height: 1.85;
 }
 
 .comment-time {
@@ -230,16 +230,21 @@ body {
 
 .comment-input {
   width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(26,26,94,0.3);
+  background: rgba(255,255,255,0.15);
+  border: 2px dashed rgba(26,26,94,0.4);
+  border-radius: 4px;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.75rem, 1.5vw, 1rem);
   color: #1a1a5e;
   resize: none;
   outline: none;
-  padding: 2px 0;
-  line-height: 1.4;
+  padding: 4px 6px;
+  line-height: 1.85;
+}
+
+.comment-input:focus {
+  border-color: rgba(26,26,94,0.7);
+  background: rgba(255,255,255,0.25);
 }
 
 .comment-input::placeholder {
@@ -371,6 +376,30 @@ body {
   cursor: pointer;
 }
 .photo-btn:hover { background: rgba(0,255,255,0.2); }
+
+/* ─── Guestbook toast ───────────────────────────────────── */
+.guestbook-toast {
+  position: fixed;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fffde7;
+  border: 2px solid #1a1a5e;
+  border-radius: 4px;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  color: #1a1a5e;
+  padding: 14px 28px;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.9s ease;
+  box-shadow: 3px 3px 0 rgba(26,26,94,0.15);
+  white-space: nowrap;
+}
+
+.guestbook-toast.hidden { display: none; }
+.guestbook-toast.fading { opacity: 0; }
 
 /* ─── Cursor canvas (injected by JS) ────────────────────── */
 #cursor-canvas {

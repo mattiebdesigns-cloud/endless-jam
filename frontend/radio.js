@@ -166,6 +166,15 @@ async function loadComments(fileId) {
   }
 }
 
+function showGuestbookToast() {
+  const toast = document.getElementById('guestbook-toast');
+  toast.classList.remove('hidden', 'fading');
+  setTimeout(() => {
+    toast.classList.add('fading');
+    setTimeout(() => toast.classList.add('hidden'), 1000);
+  }, 2200);
+}
+
 async function submitComment() {
   const text = commentInput.value.trim();
   if (!text || !currentFileId) return;
@@ -176,7 +185,11 @@ async function submitComment() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     }, 10000);
-    if (res.ok) { commentInput.value = ''; await loadComments(currentFileId); }
+    if (res.ok) {
+      commentInput.value = '';
+      await loadComments(currentFileId);
+      showGuestbookToast();
+    }
   } catch { /* silent */ } finally { commentSubmit.disabled = false; }
 }
 
