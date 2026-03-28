@@ -1,0 +1,9 @@
+.env
+file_index.json
+comments.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.json
+!.env.example
