@@ -154,7 +154,7 @@ body {
 
 #play-btn {
   position: absolute;
-  left: 32.1%; top: 46.2%;
+  left: calc(32.1% + 4px); top: calc(46.2% + 4px);
 }
 
 #next-btn {
