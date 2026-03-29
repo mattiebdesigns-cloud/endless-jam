@@ -263,6 +263,13 @@ async function loadNextTrack() {
     const dateStr     = data.date_hint || '';
     const filename    = data.name || '';
 
+    // Marquee
+    const marquee = qs('marquee-text');
+    if (marquee) {
+      const t = escapeHtml(displayName).toUpperCase();
+      marquee.innerHTML = `&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;`;
+    }
+
     // Desktop UI
     if (trackNameEl) trackNameEl.textContent = displayName;
     if (dateHintEl)  dateHintEl.textContent  = dateStr ? `${dateStr}  ·  ${filename}` : filename;
