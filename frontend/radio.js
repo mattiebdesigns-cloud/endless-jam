@@ -13,7 +13,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
 
   const trail = [];
   let mx = -200, my = -200;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; trail.push({ x: mx, y: my }); if (trail.length > 28) trail.shift(); });
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; trail.push({ x: mx, y: my }); if (trail.length > 60) trail.shift(); });
   document.addEventListener('mouseleave', () => { mx = -200; my = -200; trail.length = 0; });
 
   const STAR_COLORS = ['#FFD700','#FF69B4','#00FFFF','#FFFFFF','#FF4500'];
