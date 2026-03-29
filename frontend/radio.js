@@ -267,7 +267,8 @@ async function loadNextTrack() {
     const marquee = qs('marquee-text');
     if (marquee) {
       const t = escapeHtml(displayName).toUpperCase();
-      marquee.innerHTML = `&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;`;
+      const d = dateStr ? `&nbsp;&nbsp;&#9733;&nbsp;&nbsp;RECORDED (${escapeHtml(dateStr)})` : '';
+      marquee.innerHTML = `&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}${d}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;ENDLESS JAM&nbsp;&nbsp;&#9733;&nbsp;&nbsp;NOW PLAYING: ${t}${d}&nbsp;&nbsp;&#9733;&nbsp;&nbsp;<a href="#contact" class="marquee-link">&#9993; EMAIL ENDLESS JAM</a>&nbsp;&nbsp;&#9733;&nbsp;&nbsp;`;
     }
 
     // Desktop UI
