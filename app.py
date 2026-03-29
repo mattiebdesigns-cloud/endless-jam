@@ -1,7 +1,7 @@
 import os
 import json
 import random
-import sqlite3
+import libsql_experimental as sqlite3
 import threading
 import time
 import re
@@ -26,7 +26,8 @@ DRIVE_FOLDER_ID = os.environ.get('DRIVE_FOLDER_ID', '0B7pTsV_yQbEXVkRVWEVSZkZJQj
 DRIVE_RESOURCE_KEY = os.environ.get('DRIVE_RESOURCE_KEY', '0-0IKAUcYG-xFxff_GxKY_NQ')
 CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '*')
 INDEX_FILE = os.environ.get('INDEX_FILE', 'file_index.json')
-DB_FILE = os.environ.get('DB_FILE', 'comments.db')
+TURSO_URL   = os.environ.get('TURSO_URL', '')
+TURSO_TOKEN = os.environ.get('TURSO_TOKEN', '')
 
 AUDIO_EXTENSIONS = {'.mp3', '.m4a', '.wav', '.aac', '.ogg', '.flac', '.opus', '.wma'}
 PHOTO_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
@@ -233,7 +234,7 @@ def make_display_name(filename: str) -> str:
 # SQLite — comments
 # ---------------------------------------------------------------------------
 def get_db():
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(TURSO_URL, auth_token=TURSO_TOKEN)
     conn.row_factory = sqlite3.Row
     return conn
 
