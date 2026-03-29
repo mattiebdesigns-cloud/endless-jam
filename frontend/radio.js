@@ -147,21 +147,34 @@ async function loadComments(fileId) {
   }
 }
 
+function appendItem(listEl, text, emptyClass) {
+  if (!listEl) return;
+  const empty = listEl.querySelector('.' + emptyClass);
+  if (empty) empty.remove();
+  const li = document.createElement('li');
+  li.className = 'comment-item';
+  li.innerHTML = `<div class="comment-text">${escapeHtml(text)}</div><div class="comment-time">just now</div>`;
+  listEl.appendChild(li);
+  listEl.scrollTop = listEl.scrollHeight;
+}
+
 async function submitSongFeels(inputEl, listEl) {
   const text = (inputEl ? inputEl.value : '').trim();
   if (!text || !currentFileId) return;
   inputEl.disabled = true;
+  appendItem(commentsList, text, 'comment-empty');
+  appendItem(mCommentList, text, 'comment-empty');
+  inputEl.value = '';
+  showToast('songfeels-toast');
   try {
     const res = await fetchWithTimeout(`${BACKEND_URL}/api/comments/${currentFileId}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     }, 10000);
     if (res.ok) {
-      inputEl.value = '';
       const data = await (await fetch(`${BACKEND_URL}/api/comments/${currentFileId}`)).json();
       renderComments(data, commentsList);
       renderComments(data, mCommentList);
-      showToast('songfeels-toast');
     }
   } catch { } finally { inputEl.disabled = false; }
 }
@@ -195,17 +208,19 @@ async function submitGuestbook(inputEl, listEl) {
   const text = (inputEl ? inputEl.value : '').trim();
   if (!text) return;
   inputEl.disabled = true;
+  appendItem(gbList, text, 'comment-empty');
+  appendItem(mGbList, text, 'comment-empty');
+  inputEl.value = '';
+  showToast('guestbook-toast');
   try {
     const res = await fetchWithTimeout(`${BACKEND_URL}/api/guestbook`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     }, 10000);
     if (res.ok) {
-      inputEl.value = '';
       const data = await (await fetch(`${BACKEND_URL}/api/guestbook`)).json();
       renderGuestbook(data, gbList);
       renderGuestbook(data, mGbList);
-      showToast('guestbook-toast');
     }
   } catch { } finally { inputEl.disabled = false; }
 }
