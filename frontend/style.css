@@ -385,7 +385,7 @@ body {
   left: calc(86.7% - 10px); top: 11.8%;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.6rem, 1.2vw, 0.85rem);
-  color: #1a1a5e;
+  color: #ff00ff;
   text-decoration: none;
   pointer-events: all;
   font-style: italic;
