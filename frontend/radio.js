@@ -159,7 +159,8 @@ async function submitSongFeels(inputEl, listEl) {
     if (res.ok) {
       inputEl.value = '';
       const data = await (await fetch(`${BACKEND_URL}/api/comments/${currentFileId}`)).json();
-      renderComments(data, listEl);
+      renderComments(data, commentsList);
+      renderComments(data, mCommentList);
       showToast('songfeels-toast');
     }
   } catch { } finally { inputEl.disabled = false; }
