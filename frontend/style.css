@@ -134,11 +134,13 @@ body {
 /* ─── Tap hint ──────────────────────────────────────────── */
 .tap-hint {
   position: absolute;
-  left: 32.1%; top: 44.5%;
+  left: calc(32.1% + 4px); top: 54%;
+  transform: translateX(-50%);
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  color: #888;
+  color: #00ffff;
   font-style: italic;
   pointer-events: none;
+  white-space: nowrap;
 }
 .tap-hint.hidden { display: none; }
 
