@@ -66,8 +66,9 @@ const RETRY_DELAYS = [3000, 5000, 8000, 12000, 20000];
 let currentFileId = null;
 let isPlaying = false;
 
-// Single audio element — shown on mobile via CSS, controlled via JS on desktop
-const audioPlayer = qs('audio-player');
+// Desktop audio (hidden, JS-controlled) and mobile audio (native controls)
+const audioPlayer       = qs('audio-player');
+const audioPlayerMobile = qs('audio-player-mobile');
 
 // ─── Desktop UI refs ──────────────────────────────────────────────────────────
 const loadingState = qs('loading-state');
@@ -217,6 +218,12 @@ audioPlayer.addEventListener('pause', () => { isPlaying = false; updatePlayBtn()
 audioPlayer.addEventListener('ended', () => { isPlaying = false; retryCount = 0; loadNextTrack(); });
 audioPlayer.addEventListener('error', () => { setTimeout(() => { retryCount = 0; loadNextTrack(); }, 2000); });
 
+// Mobile audio — auto-advance on end/error
+if (audioPlayerMobile) {
+  audioPlayerMobile.addEventListener('ended', () => { retryCount = 0; loadNextTrack(); });
+  audioPlayerMobile.addEventListener('error', () => { setTimeout(() => { retryCount = 0; loadNextTrack(); }, 2000); });
+}
+
 // ─── Load track ──────────────────────────────────────────────────────────────
 async function loadNextTrack() {
   isPlaying = false;
@@ -251,9 +258,15 @@ async function loadNextTrack() {
     if (mLoading)    mLoading.style.display  = 'none';
     if (mPlayer)     mPlayer.style.display   = '';
 
+    const streamSrc = BACKEND_URL + data.stream_url;
     audioPlayer.pause();
     audioPlayer.src = '';
-    audioPlayer.src = BACKEND_URL + data.stream_url;
+    audioPlayer.src = streamSrc;
+    if (audioPlayerMobile) {
+      audioPlayerMobile.src = '';
+      audioPlayerMobile.src = streamSrc;
+      audioPlayerMobile.load();
+    }
 
     retryCount = 0;
     showState('player');
