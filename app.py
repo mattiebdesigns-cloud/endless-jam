@@ -1,7 +1,42 @@
 import os
 import json
 import random
-import libsql_experimental as sqlite3
+# ---------------------------------------------------------------------------
+# Turso HTTP client (lightweight replacement for sqlite3)
+# ---------------------------------------------------------------------------
+def _turso_arg(v):
+    if v is None:   return {'type': 'null'}
+    if isinstance(v, int):   return {'type': 'integer', 'value': str(v)}
+    if isinstance(v, float): return {'type': 'real',    'value': str(v)}
+    return {'type': 'text', 'value': str(v)}
+
+class _TursoCursor:
+    def __init__(self, cols, rows, last_id):
+        self._rows = [dict(zip(cols, [c.get('value') for c in r])) for r in rows]
+        self.lastrowid = last_id
+    def fetchall(self):  return self._rows
+    def fetchone(self):  return self._rows[0] if self._rows else None
+
+class _TursoConn:
+    def __init__(self, url, token):
+        self._url   = url.replace('libsql://', 'https://') + '/v2/pipeline'
+        self._token = token
+    def execute(self, sql, params=()):
+        payload = {'requests': [
+            {'type': 'execute', 'stmt': {'sql': sql, 'args': [_turso_arg(p) for p in params]}},
+            {'type': 'close'},
+        ]}
+        r = http_requests.post(self._url, json=payload,
+                               headers={'Authorization': f'Bearer {self._token}'}, timeout=10)
+        res = r.json()['results'][0]
+        if res['type'] == 'error':
+            raise Exception(res['error']['message'])
+        result = res['response']['result']
+        cols = [c['name'] for c in result['cols']]
+        return _TursoCursor(cols, result['rows'], result.get('last_insert_rowid'))
+    def commit(self): pass
+    def __enter__(self):  return self
+    def __exit__(self, *a): pass
 import threading
 import time
 import re
@@ -234,9 +269,7 @@ def make_display_name(filename: str) -> str:
 # SQLite — comments
 # ---------------------------------------------------------------------------
 def get_db():
-    conn = sqlite3.connect(TURSO_URL, auth_token=TURSO_TOKEN)
-    conn.row_factory = sqlite3.Row
-    return conn
+    return _TursoConn(TURSO_URL, TURSO_TOKEN)
 
 
 def init_db():
@@ -366,7 +399,7 @@ def get_comments(file_id):
             'SELECT id, text, created_at FROM comments WHERE file_id = ? ORDER BY created_at',
             (file_id,),
         ).fetchall()
-    return jsonify([dict(r) for r in rows])
+    return jsonify(rows)
 
 
 @app.route('/api/comments/<file_id>', methods=['POST'])
@@ -396,7 +429,7 @@ def get_guestbook():
         rows = conn.execute(
             'SELECT id, text, created_at FROM guestbook ORDER BY created_at DESC LIMIT 50',
         ).fetchall()
-    return jsonify([dict(r) for r in rows])
+    return jsonify(rows)
 
 
 @app.route('/api/guestbook', methods=['POST'])
