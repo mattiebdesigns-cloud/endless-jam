@@ -382,7 +382,7 @@ body {
 /* point: 75.1%, 27.3% */
 .send-note-link {
   position: absolute;
-  left: 86.7%; top: 11.8%;
+  left: calc(86.7% - 10px); top: 11.8%;
   font-family: 'Caveat', cursive;
   font-size: clamp(0.6rem, 1.2vw, 0.85rem);
   color: #1a1a5e;
