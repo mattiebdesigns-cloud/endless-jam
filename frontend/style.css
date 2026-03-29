@@ -388,7 +388,6 @@ body {
   color: #1a1a5e;
   text-decoration: none;
   pointer-events: all;
-  white-space: nowrap;
   font-style: italic;
   transform: rotate(1deg);
 }
