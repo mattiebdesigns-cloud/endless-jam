@@ -185,7 +185,7 @@ body {
 /* top: 33.8%,51.0% — bottom: 33.5%,57.0% → center 33.7%,54% — length 6% of height */
 .volume-slider {
   position: absolute;
-  left: 26.3%; top: calc(50.3% - 2.5px);
+  left: 26.3%; top: calc(50.3% + 2.5px);
   transform: translate(-50%, -50%) rotate(-90deg);
   width: clamp(50px, calc(6vw - 5px), 73px);
   height: 4px;
