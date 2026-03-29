@@ -10,72 +10,65 @@
     .hint { font-size: 0.75rem; color: #888; margin-bottom: 12px; }
     .hint strong { color: #ff0; }
 
-    .drop-zone {
-      border: 2px dashed #555; border-radius: 6px; padding: 28px;
-      text-align: center; color: #888; cursor: pointer; margin-bottom: 12px;
-    }
-    .drop-zone.drag-over { border-color: #0ff; color: #0ff; }
-    .drop-zone input { display: none; }
-
     .workspace { display: flex; gap: 16px; align-items: flex-start; }
 
     .img-wrap {
-      position: relative; flex-shrink: 0; max-width: 68vw; cursor: crosshair;
-      user-select: none;
+      position: relative; flex-shrink: 0; max-width: 68vw;
+      cursor: crosshair; user-select: none;
     }
-    .img-wrap img { display: block; max-width: 100%; }
+    .img-wrap img { display: block; max-width: 100%; pointer-events: none; }
 
-    .pin {
-      position: absolute;
-      width: 0; height: 0;
-      pointer-events: none;
+    /* Live drag preview box */
+    #drag-preview {
+      position: absolute; border: 2px dashed #ff0;
+      background: rgba(255,255,0,0.08); pointer-events: none; display: none;
     }
-    .pin::before {
-      content: '';
-      position: absolute;
-      width: 10px; height: 10px;
-      background: #ff0; border: 1.5px solid #000; border-radius: 50%;
-      transform: translate(-50%, -50%);
+
+    /* Committed boxes */
+    .box-overlay {
+      position: absolute; border: 2px solid #ff0;
+      background: rgba(255,255,0,0.06); pointer-events: none;
     }
-    .pin-label {
-      position: absolute;
-      font-size: 10px;
-      background: rgba(0,0,0,0.8); color: #ff0;
+    .box-label {
+      position: absolute; font-size: 10px;
+      background: rgba(0,0,0,0.82); color: #ff0;
       padding: 1px 4px; border-radius: 3px; white-space: nowrap;
+      top: 0; left: 0; transform: translateY(-100%);
       pointer-events: none;
-      transform: translate(6px, -50%);
     }
 
-    .panel { flex: 1; min-width: 260px; max-width: 340px; }
+    .panel { flex: 1; min-width: 260px; max-width: 360px; }
 
     #coords-display {
-      font-size: 0.8rem; padding: 8px 12px;
+      font-size: 0.78rem; padding: 8px 10px;
       background: #1a1a1a; border: 1px solid #444; border-radius: 4px;
-      margin-bottom: 10px; line-height: 1.6; min-height: 36px;
+      margin-bottom: 10px; line-height: 1.7; min-height: 38px;
     }
     #coords-display .val { color: #0ff; font-weight: bold; }
 
-    #points-list { list-style: none; font-size: 0.78rem; }
-    #points-list li {
-      display: flex; align-items: center; gap: 5px;
-      padding: 3px 0; border-bottom: 1px solid #222;
+    #boxes-list { list-style: none; font-size: 0.75rem; }
+    #boxes-list li {
+      padding: 4px 0; border-bottom: 1px solid #222;
     }
-    #points-list .num { color: #888; min-width: 18px; }
-    #points-list .coords { color: #ff0; min-width: 148px; font-size: 0.72rem; }
-    #points-list .label-input {
+    #boxes-list .row1 { display: flex; align-items: center; gap: 5px; }
+    #boxes-list .num  { color: #888; min-width: 18px; }
+    #boxes-list .label-input {
       background: #222; border: 1px solid #444; color: #eee;
-      font-family: monospace; font-size: 0.72rem; padding: 1px 4px;
-      flex: 1; min-width: 80px;
+      font-family: monospace; font-size: 0.72rem; padding: 1px 4px; flex: 1;
     }
-    #points-list .anchor-btn {
+    #boxes-list .anchor-btn {
       background: #333; border: 1px solid #555; color: #aaa;
       font-family: monospace; font-size: 0.65rem; padding: 1px 5px;
       border-radius: 3px; cursor: pointer; white-space: nowrap;
     }
-    #points-list .anchor-btn.bottom { background: #002244; border-color: #0066aa; color: #66aaff; }
-    #points-list .del-btn {
+    #boxes-list .anchor-btn.bottom { background: #002244; border-color: #0066aa; color: #66aaff; }
+    #boxes-list .del-btn {
       background: #500; border: none; color: #f88; cursor: pointer;
       font-size: 0.65rem; padding: 1px 5px; border-radius: 3px;
+    }
+    #boxes-list .coords {
+      color: #ff0; font-size: 0.68rem; margin-top: 1px; padding-left: 22px;
+      line-height: 1.5;
     }
 
     .btn-row { margin-top: 12px; display: flex; gap: 8px; }
@@ -97,18 +90,17 @@
 </head>
 <body>
   <h1>Layout Tool</h1>
-  <p class="hint">Loads <strong>notebook-scene.jpg</strong> automatically. Coordinates map 1:1 to CSS.</p>
+  <p class="hint"><strong>Drag</strong> to draw a box. Toggle <strong>top/bottom</strong> anchor per box. Coordinates map 1:1 to CSS.</p>
 
   <div class="workspace" id="workspace">
     <div class="img-wrap" id="img-wrap">
       <img id="preview" src="notebook-scene.jpg" alt="notebook"/>
+      <div id="drag-preview"></div>
     </div>
 
     <div class="panel">
-      <div id="coords-display">hover over image to see coordinates</div>
-
-      <ul id="points-list"></ul>
-
+      <div id="coords-display">drag on the image to place a box</div>
+      <ul id="boxes-list"></ul>
       <div class="btn-row">
         <button id="copy-btn" style="display:none">Copy CSS</button>
         <button id="clear-btn" style="display:none">Clear all</button>
@@ -118,123 +110,158 @@
   </div>
 
   <script>
-    const workspace  = document.getElementById('workspace');
     const imgWrap    = document.getElementById('img-wrap');
     const preview    = document.getElementById('preview');
+    const dragPrev   = document.getElementById('drag-preview');
     const coordsDisp = document.getElementById('coords-display');
-    const pointsList = document.getElementById('points-list');
+    const boxesList  = document.getElementById('boxes-list');
     const copyBtn    = document.getElementById('copy-btn');
     const clearBtn   = document.getElementById('clear-btn');
     const output     = document.getElementById('output');
 
-    let points = [];
+    let boxes  = [];
     let nextId = 1;
+    let dragging = false;
+    let dragStart = null;
 
-    // ── Get % coordinates from mouse event ──────────────────────
-    function getPercent(e) {
-      const rect = preview.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width  * 100);
-      const y = ((e.clientY - rect.top)  / rect.height * 100);
-      return { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) };
+    function getPct(e) {
+      const r = preview.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(100, (e.clientX - r.left) / r.width  * 100)),
+        y: Math.max(0, Math.min(100, (e.clientY - r.top)  / r.height * 100)),
+      };
     }
 
-    // ── Hover: show live coordinates ────────────────────────────
+    // ── Hover display ───────────────────────────────────────────
     imgWrap.addEventListener('mousemove', e => {
-      const { x, y } = getPercent(e);
+      if (dragging) return;
+      const { x, y } = getPct(e);
       coordsDisp.innerHTML =
-        `left: <span class="val">${x.toFixed(1)}%</span> &nbsp; top: <span class="val">${y.toFixed(1)}%</span> &nbsp; bottom: <span class="val">${(100-y).toFixed(1)}%</span>`;
+        `left: <span class="val">${x.toFixed(1)}%</span> &nbsp; ` +
+        `top: <span class="val">${y.toFixed(1)}%</span> &nbsp; ` +
+        `bottom: <span class="val">${(100-y).toFixed(1)}%</span>`;
     });
     imgWrap.addEventListener('mouseleave', () => {
-      coordsDisp.textContent = 'hover over image to see coordinates';
+      if (!dragging) coordsDisp.textContent = 'drag on the image to place a box';
     });
 
-    // ── Click: place pin ────────────────────────────────────────
-    imgWrap.addEventListener('click', e => {
-      const { x, y } = getPercent(e);
-      addPoint(x, y);
+    // ── Drag to draw ────────────────────────────────────────────
+    imgWrap.addEventListener('mousedown', e => {
+      e.preventDefault();
+      dragging = true;
+      dragStart = getPct(e);
+      dragPrev.style.display = 'block';
+      updateDragPreview(dragStart, dragStart);
     });
 
-    function addPoint(x, y) {
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const cur = getPct(e);
+      updateDragPreview(dragStart, cur);
+      const x1 = Math.min(dragStart.x, cur.x), x2 = Math.max(dragStart.x, cur.x);
+      const y1 = Math.min(dragStart.y, cur.y), y2 = Math.max(dragStart.y, cur.y);
+      coordsDisp.innerHTML =
+        `left: <span class="val">${x1.toFixed(1)}%</span> &nbsp; ` +
+        `top: <span class="val">${y1.toFixed(1)}%</span> &nbsp; ` +
+        `width: <span class="val">${(x2-x1).toFixed(1)}%</span> &nbsp; ` +
+        `height: <span class="val">${(y2-y1).toFixed(1)}%</span>`;
+    });
+
+    window.addEventListener('mouseup', e => {
+      if (!dragging) return;
+      dragging = false;
+      dragPrev.style.display = 'none';
+      const end = getPct(e);
+      const x1 = Math.min(dragStart.x, end.x), x2 = Math.max(dragStart.x, end.x);
+      const y1 = Math.min(dragStart.y, end.y), y2 = Math.max(dragStart.y, end.y);
+      // ignore tiny accidental clicks
+      if ((x2 - x1) < 0.5 && (y2 - y1) < 0.5) { coordsDisp.textContent = 'drag on the image to place a box'; return; }
+      addBox(x1, y1, x2 - x1, y2 - y1);
+    });
+
+    function updateDragPreview(a, b) {
+      const r = preview.getBoundingClientRect();
+      const x1p = Math.min(a.x, b.x), x2p = Math.max(a.x, b.x);
+      const y1p = Math.min(a.y, b.y), y2p = Math.max(a.y, b.y);
+      dragPrev.style.left   = x1p + '%';
+      dragPrev.style.top    = y1p + '%';
+      dragPrev.style.width  = (x2p - x1p) + '%';
+      dragPrev.style.height = (y2p - y1p) + '%';
+    }
+
+    // ── Commit box ──────────────────────────────────────────────
+    function addBox(left, top, width, height) {
       const id = nextId++;
-      // anchor: 'top' or 'bottom'
-      points.push({ id, x, y, label: '', anchor: 'top' });
+      boxes.push({ id, left, top, width, height, label: '', anchor: 'top' });
 
-      // Pin dot on image
-      const pin = document.createElement('div');
-      pin.className = 'pin'; pin.id = `pin-${id}`;
-      pin.style.left = x + '%';
-      pin.style.top  = y + '%';
-      imgWrap.appendChild(pin);
-
+      // Overlay on image
+      const box = document.createElement('div');
+      box.className = 'box-overlay'; box.id = `box-${id}`;
+      box.style.left   = left   + '%';
+      box.style.top    = top    + '%';
+      box.style.width  = width  + '%';
+      box.style.height = height + '%';
       const lbl = document.createElement('div');
-      lbl.className = 'pin-label'; lbl.id = `pin-lbl-${id}`;
+      lbl.className = 'box-label'; lbl.id = `box-lbl-${id}`;
       lbl.textContent = String(id);
-      lbl.style.left = x + '%';
-      lbl.style.top  = y + '%';
-      imgWrap.appendChild(lbl);
+      box.appendChild(lbl);
+      imgWrap.appendChild(box);
 
-      // Row in panel
+      // Panel row
       const li = document.createElement('li');
       li.id = `row-${id}`;
-      const topVal    = y.toFixed(1);
-      const bottomVal = (100 - y).toFixed(1);
       li.innerHTML = `
-        <span class="num">${id}</span>
-        <span class="coords" id="coord-${id}">left:${x.toFixed(1)}% top:${topVal}%</span>
-        <input class="label-input" type="text" placeholder="name" data-id="${id}"/>
-        <button class="anchor-btn" data-id="${id}" title="Toggle top/bottom anchor">top</button>
-        <button class="del-btn" data-id="${id}">✕</button>`;
-      pointsList.appendChild(li);
+        <div class="row1">
+          <span class="num">${id}</span>
+          <input class="label-input" type="text" placeholder="name" data-id="${id}"/>
+          <button class="anchor-btn" data-id="${id}">top</button>
+          <button class="del-btn"    data-id="${id}">✕</button>
+        </div>
+        <div class="coords" id="coord-${id}">${coordStr({ left, top, width, height, anchor:'top' })}</div>`;
+      boxesList.appendChild(li);
 
       li.querySelector('.label-input').addEventListener('input', e => {
-        const pt = points.find(p => p.id == e.target.dataset.id);
-        if (!pt) return;
-        pt.label = e.target.value;
-        const pl = document.getElementById(`pin-lbl-${pt.id}`);
-        if (pl) pl.textContent = pt.label || String(pt.id);
+        const b = boxes.find(b => b.id == e.target.dataset.id);
+        if (!b) return;
+        b.label = e.target.value;
+        const lbl = document.getElementById(`box-lbl-${b.id}`);
+        if (lbl) lbl.textContent = b.label || String(b.id);
       });
 
       li.querySelector('.anchor-btn').addEventListener('click', e => {
-        const did = parseInt(e.target.dataset.id);
-        const pt = points.find(p => p.id === did);
-        if (!pt) return;
-        pt.anchor = pt.anchor === 'top' ? 'bottom' : 'top';
-        e.target.textContent = pt.anchor;
-        e.target.classList.toggle('bottom', pt.anchor === 'bottom');
-        updateCoordDisplay(pt);
+        const b = boxes.find(b => b.id == e.target.dataset.id);
+        if (!b) return;
+        b.anchor = b.anchor === 'top' ? 'bottom' : 'top';
+        e.target.textContent = b.anchor;
+        e.target.classList.toggle('bottom', b.anchor === 'bottom');
+        document.getElementById(`coord-${b.id}`).textContent = coordStr(b);
       });
 
       li.querySelector('.del-btn').addEventListener('click', e => {
         const did = parseInt(e.target.dataset.id);
-        points = points.filter(p => p.id !== did);
-        document.getElementById(`pin-${did}`)?.remove();
-        document.getElementById(`pin-lbl-${did}`)?.remove();
+        boxes = boxes.filter(b => b.id !== did);
+        document.getElementById(`box-${did}`)?.remove();
         document.getElementById(`row-${did}`)?.remove();
-        if (!points.length) { copyBtn.style.display = 'none'; clearBtn.style.display = 'none'; }
+        if (!boxes.length) { copyBtn.style.display = 'none'; clearBtn.style.display = 'none'; }
       });
 
       copyBtn.style.display = 'inline-block';
       clearBtn.style.display = 'inline-block';
     }
 
-    function updateCoordDisplay(pt) {
-      const el = document.getElementById(`coord-${pt.id}`);
-      if (!el) return;
-      const vPos = pt.anchor === 'bottom'
-        ? `bottom:${(100 - pt.y).toFixed(1)}%`
-        : `top:${pt.y.toFixed(1)}%`;
-      el.textContent = `left:${pt.x.toFixed(1)}% ${vPos}`;
+    function coordStr(b) {
+      const vPos = b.anchor === 'bottom'
+        ? `bottom: ${(100 - b.top - b.height).toFixed(1)}%`
+        : `top: ${b.top.toFixed(1)}%`;
+      return `left: ${b.left.toFixed(1)}%;  ${vPos};  width: ${b.width.toFixed(1)}%;  height: ${b.height.toFixed(1)}%`;
     }
 
-    // ── Copy output ─────────────────────────────────────────────
+    // ── Copy CSS ────────────────────────────────────────────────
     copyBtn.addEventListener('click', () => {
-      if (!points.length) return;
-      const lines = points.map(p => {
-        const name  = p.label || `point ${p.id}`;
-        const vPos  = p.anchor === 'bottom'
-          ? `bottom: ${(100 - p.y).toFixed(1)}%`
-          : `top: ${p.y.toFixed(1)}%`;
-        return `/* ${name}: left: ${p.x.toFixed(1)}%; ${vPos}; */`;
+      if (!boxes.length) return;
+      const lines = boxes.map(b => {
+        const name = b.label || `box ${b.id}`;
+        return `/* ${name}: ${coordStr(b)}; */`;
       }).join('\n');
       output.textContent = lines;
       output.style.display = 'block';
@@ -242,12 +269,13 @@
     });
 
     clearBtn.addEventListener('click', () => {
-      points = []; nextId = 1;
-      pointsList.innerHTML = '';
-      imgWrap.querySelectorAll('.pin, .pin-label').forEach(el => el.remove());
+      boxes = []; nextId = 1;
+      boxesList.innerHTML = '';
+      imgWrap.querySelectorAll('.box-overlay').forEach(el => el.remove());
       copyBtn.style.display = 'none';
       clearBtn.style.display = 'none';
       output.style.display = 'none';
+      coordsDisp.textContent = 'drag on the image to place a box';
     });
   </script>
 </body>
