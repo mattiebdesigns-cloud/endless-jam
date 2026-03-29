@@ -134,7 +134,7 @@ body {
 /* ─── Tap hint ──────────────────────────────────────────── */
 .tap-hint {
   position: absolute;
-  left: calc(32.1% + 14px); top: 54%;
+  left: calc(32.1% + 29px); top: 54%;
   transform: translateX(-50%);
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   color: #00ffff;
